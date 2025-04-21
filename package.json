@@ -53,6 +53,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "dayjs": "^1.11.13",
-    "es-arraybuffer-base64": "^1.1.2"
+    "es-arraybuffer-base64": "^1.1.2",
+    "tsx": "^4.19.3"
   }
 }
