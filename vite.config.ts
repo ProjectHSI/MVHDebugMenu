@@ -13,6 +13,6 @@ export default defineConfig({
 
     build: {
         cssMinify: "lightningcss",
-        sourcemap: "inline"
+        //sourcemap: "inline"
     }
 });
