@@ -3,7 +3,8 @@
 import {type Encrypted, FileType, type FSDirectory, type FSFile} from "./publicFs";
 import * as crypto from "node:crypto";
 
-import "es-arraybuffer-base64/Uint8Array.prototype.toBase64/auto";
+import "core-js/actual/typed-array/from-base64.js";
+import "core-js/actual/typed-array/to-base64.js";
 
 async function generateEncrypted(data: Uint8Array, keyPhrase: Uint8Array): Promise<Encrypted> {
     //eyPhrase = textEncoder.encode("this is a sample key");
@@ -22,7 +23,7 @@ async function generateEncrypted(data: Uint8Array, keyPhrase: Uint8Array): Promi
         data,
     );
 
-    console.log(new Uint8Array(await crypto.subtle.exportKey("raw", derivedKey)).toBase64({ alphabet: "base64url" }), keySalt);
+    //console.log(new Uint8Array(await crypto.subtle.exportKey("raw", derivedKey)).toBase64({ alphabet: "base64url" }), keySalt);
 
     return { cipherText: encryptResult, iv: iv, salt: keySalt, sha256: await crypto.subtle.digest("SHA-512", data) };
 
@@ -94,6 +95,14 @@ export const FS: FSDirectory = {
                     file: true,
                     fileContent: {
                         fileContent: "This is a sample text file!",
+                        fileMimeType: "text/plain",
+                        fileContentType: FileType.RAW
+                    }
+                },
+                "the_seekret.txt": {
+                    file: true,
+                    fileContent: {
+                        fileContent: "the seekret is not in another castle",
                         fileMimeType: "text/plain",
                         fileContentType: FileType.RAW
                     }

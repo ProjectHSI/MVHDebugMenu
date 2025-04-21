@@ -29,6 +29,7 @@
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.20.5",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@types/core-js": "^2.5.8",
     "cssnano": "^7.0.6",
     "lightningcss": "^1.29.3",
     "mdsvex": "^0.12.3",
@@ -52,6 +53,7 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "core-js": "^3.41.0",
     "dayjs": "^1.11.13",
     "es-arraybuffer-base64": "^1.1.2",
     "tsx": "^4.19.3"

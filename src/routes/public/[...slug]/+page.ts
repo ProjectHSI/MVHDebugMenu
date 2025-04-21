@@ -1,3 +1,6 @@
+import "core-js/actual/typed-array/from-base64";
+import "core-js/actual/typed-array/to-base64";
+
 import {FS} from "$lib/publicFsContents.compile";
 import {
     type Encrypted, FileType,
@@ -10,7 +13,8 @@ import {
 //declare class Uint8Array impl
 
 // @ts-ignore
-import "es-arraybuffer-base64/Uint8Array.fromBase64/auto";
+//import "es-arraybuffer-base64/Uint8Array.fromBase64/auto";
+//import "$lib/base64";
 import type {PublicFsPathElement} from "$lib/publicFs.path";
 //import crypto from "node:crypto";
 
@@ -51,9 +55,9 @@ async function decrypt(data: Encrypted, key: CryptoKey): Promise<ArrayBuffer | n
         //console.log("decryptHash", await crypto.subtle.digest("SHA-512", decryptResult))
         //console.log("decryptExpectedHash", data.sha256)
 
-        console.log("decryptRes", decryptResult)
-        console.log("decryptResText", new TextDecoder().decode(decryptResult));
-        console.log("decrypt", isDecryptionSuccessful)
+        //console.log("decryptRes", decryptResult)
+        //console.log("decryptResText", new TextDecoder().decode(decryptResult));
+        //console.log("decrypt", isDecryptionSuccessful)
 
         return isDecryptionSuccessful ? decryptResult : null; //{ cipherText: encryptResult, iv: iv, salt: keySalt, sha256: await crypto.subtle.digest("SHA-512", data) };
     } catch (e) {
@@ -136,7 +140,7 @@ export const load = async ({ params }): Promise<FSOutput> => {
                 if (getIsFsDirectoryContentsEncrypted(fsWalkCurrent.contents)) {
                     // The slug is a passphrase for a directory.
                     // @ts-ignore
-                    console.log("slug dir key phrase", slugs[i])
+                    //console.log("slug dir key phrase", slugs[i])
                     const decryptedData = await decrypt(fsWalkCurrent.contents, await crypto.subtle.importKey("raw", Uint8Array.fromBase64(slugs[i], { alphabet: "base64url" }), "AES-GCM", true, [ "encrypt", "decrypt" ]));
 
                     //console.log("test")
