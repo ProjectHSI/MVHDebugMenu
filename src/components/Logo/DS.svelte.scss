@@ -1,0 +1,64 @@
+@keyframes FadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+#logoContainer {
+  //border-style: solid;
+  //border-color: rgb(0, 0, 0);
+  //display: flex;
+  //justify-content: center;
+  //align-items: center;
+  /*border-width: 5%;
+  border-radius: 10px;*/
+  aspect-ratio: 4;
+  width: auto;
+  height: 100%;
+
+  //animation: FadeIn 1s;
+}
+
+#logoCenteredContainer {
+  container: logoCenteredContainer / size;
+
+  color: rgb(0, 0, 0);
+  aspect-ratio: 4;
+  height: 90%;
+  max-height: 90%;
+  width: auto;
+  max-width: 90%;
+
+  /*opacity: 0;*/
+
+  //animation: FadeIn 1s;
+
+  white-space: collapse;
+
+  //display: block;
+}
+
+//@container logoCenteredContainer {
+
+  #mvhTitle {
+    //font-size: calc(6048% / 66 * 3.5); // magic numbers
+    font-size: calc(655cqw / (655/22.9));
+    //font-size: 22.9cqw;
+
+    /*opacity: 0;*/
+
+    animation: FadeIn 1s;
+  }
+
+  #mvhDebugMenuLower {
+    //font-size: calc(4697% / 66 * 3.5); // magic numbers
+    //font-size: 242.5%;
+    font-size: calc(237.75cqw / (655/22.9));
+    //font-size: auto;
+
+    opacity: 0;
+
+    animation: FadeIn 1s;
+    animation-delay: 1s;
+    animation-fill-mode: both;
+  }
+//}
