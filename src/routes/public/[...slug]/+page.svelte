@@ -1,25 +1,13 @@
 <script lang="ts">
-    /*// @ts-ignore
-    import fromHex from 'es-arraybuffer-base64/Uint8Array.fromBase64';
-    // @ts-ignore
-    import toHex from 'es-arraybuffer-base64/Uint8Array.prototype.toBase64';*/
-
     import "core-js/actual/typed-array/from-base64";
     import "core-js/actual/typed-array/to-base64";
 
-    import {onMount} from "svelte";
-    import {FileType, type FSDirectory, type FSEntry, type FSFileInfo, getIsFsEntryFile} from "$lib/publicFs"
-    import { FS } from "$lib/publicFsContents.compile"
+    import {type FSDirectory, type FSEntry} from "$lib/publicFs"
+    //import { FS } from "$lib/publicFsContents.compile"
     import {goto} from "$app/navigation";
     import { page } from '$app/state';
     import type {PageLoad} from "./$types";
     import PathDisplay from "../../../components/PublicFS/PathDisplay.svelte";
-    //import "$lib/base64";
-
-    //import "es-arraybuffer-base64/Uint8Array.prototype.toBase64";
-    //import crypto from "node:crypto";
-
-    //require("es-arraybuffer-base64/Uint8Array.prototype.toBase64/auto")
 
     function getUrlPathNameWithoutLastPath(): string {
         let splitPathName = page.url.pathname.split("/");
@@ -153,20 +141,11 @@
     margin-bottom: 4%;
   }
 
-  #publicFsPasswordDisplayBox {
+  #publicFsContentBox {
     display: flex;
     flex-direction: column;
-
-    align-items: center;
-    justify-items: center;
-
-    width: 100%;
-    height: 100%;
-  }
-
-  #publicFsDisplayBox {
-    display: flex;
-    flex-direction: column;
+    //align-items: center;
+    //justify-content: center;
 
     width: 100%;
     //height: 100%;
@@ -174,13 +153,25 @@
     flex-grow: 1;
   }
 
-  #publicFsContentBox {
-    //display: flex;
+  #publicFsPasswordDisplayBox {
+    display: flex;
+    //flex-grow: 1;
     flex-direction: column;
+
     align-items: center;
     justify-content: center;
 
-    width: 100%;
+    flex-grow: 1;
+
+    //width: 100%;
+    //height: 100%;
+  }
+
+  #publicFsDisplayBox {
+    display: flex;
+    flex-direction: column;
+
+    //width: 100%;
     //height: 100%;
 
     flex-grow: 1;
@@ -193,6 +184,7 @@
     //min-height: 100%;
     display: flex;
     flex-direction: column;
+    //flex: 1;
 
     border-width: 2px;
     border-radius: 20px 20px;
