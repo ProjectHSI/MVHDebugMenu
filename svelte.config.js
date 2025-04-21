@@ -14,7 +14,7 @@ const config = {
             precompress: true
         }),
         paths: {
-            base: process.argv.includes('dev') ? "" : "MVHDebugMenu"
+            base: process.argv.includes('dev') ? "" : "/MVHDebugMenu"
         }
 	},
 
