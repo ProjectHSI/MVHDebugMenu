@@ -27,7 +27,7 @@
     "@storybook/sveltekit": "^8.6.12",
     "@storybook/test": "^8.6.12",
     "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/kit": "^2.20.5",
+    "@sveltejs/kit": "^2.20.6",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@types/core-js": "^2.5.8",
     "cssnano": "^7.0.6",
