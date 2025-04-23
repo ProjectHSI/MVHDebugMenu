@@ -33,6 +33,11 @@
     }
 
     async function setPassword() {
+        if (decrypting)
+            return;
+
+		decrypting = true;
+
         //@ts-ignore
 	    const key = await getKey(new TextEncoder().encode(password), data.salt);
 
@@ -40,6 +45,9 @@
 
 	    //  .toBase64({ alphabet: "base64url" })
         goto(`${data.passwordError ? getUrlPathNameWithoutLastPath() : page.url.pathname}/${(new Uint8Array(await crypto.subtle.exportKey("raw", key)).toBase64({ alphabet: "base64url" }))}`);
+
+        decrypting = false;
+        password = "";
     }
 
     function isFsEntryNull(): boolean {
@@ -89,6 +97,8 @@
     let reactiveData = $state(data);
 
     let password: string = $state("");
+
+    let decrypting: boolean = $state(false);
 </script>
 
 {#snippet ServerError(title, description)}
@@ -114,10 +124,18 @@
 
 						<!--<span><br /></span>
 	-->
-						<input class="passwordInput" type="text" bind:value={password}/>
-						<button onclick={setPassword}>Decrypt</button>
+						<input style="width: 80%;" class="passwordInput" type="text" bind:value={password}/>
+						<!--<button onclick={setPassword}>Decrypt</button>-->
+						<div style="width: 80%;" style:cursor={!decrypting ? "pointer" : ""} id="decryptButton">
+							<span id="decryptText" onclick={setPassword}>{decrypting ? "Decrypting..." : "Decrypt"}</span>
+							{#if decrypting}
+								<div id="decryptSpinner">
+									<div id="decryptSpinnerElement"></div>
+								</div>
+							{/if}
+						</div>
 						{#if data.passwordError}
-							<span>False...</span>
+							<span>The password was incorrect.</span>
 						{/if}
 					</div>
 				</div>
@@ -210,5 +228,58 @@
     padding: 0;
     width: 100%;
     flex-grow: 1;
+  }
+
+  #decryptButton {
+    //display: flex;
+    height: 1.15em;
+
+    background-color: royalblue;
+  }
+
+  #decryptText {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    z-index: 1;
+    position: relative;
+    display: block;
+
+    color: white;
+  }
+
+  #decryptSpinner {
+    width: 100%;
+    height: 1.15em;
+    display: block;
+    z-index: 0;
+    position: relative;
+    top: -1.15em;
+    overflow: clip;
+    //position: absolute;
+	//flex: 1;
+  }
+
+  #decryptSpinnerElement {
+    height: 200%;
+    top: -50%;
+    left: -15%;
+    //left: 105%;
+    //transform: rotate(22.5deg);
+    width: 10%;
+    display: block;
+    position: relative;
+
+    animation-name: indeterminateSpinnerSpin;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+
+    background-color: cornflowerblue;
+  }
+
+  @keyframes indeterminateSpinnerSpin {
+    from {left: -15%; rotate: z 22.5deg;}
+    to {left: 105%; rotate: z 22.5deg;}
   }
 </style>
