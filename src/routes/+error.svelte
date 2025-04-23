@@ -19,7 +19,7 @@
 		<br /><br /><br /><br />
 		INFORMATION:
 		<br /><br />
-		{page.error.message}
+		<span>{page.error.message}</span>
 	</TuiText>
 </div>
 

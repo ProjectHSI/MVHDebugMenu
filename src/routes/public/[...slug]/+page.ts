@@ -3,7 +3,7 @@ import "core-js/actual/typed-array/to-base64";
 
 import {FS} from "$lib/publicFsContents.compile";
 import {
-    type Encrypted, FileType,
+    type Encrypted, FileType, fixDecryptedFsDirectory,
     type FSEntry, type FSFile, type FSFileInfo,
     getIsFsDirectoryContentsEncrypted,
     getIsFsEntryDirectory,
@@ -71,6 +71,8 @@ interface FSOutput {
     fsEntry?: FSEntry;
     dataUri?: string;
 
+    corruptionMessage?: string;
+
     filePathToDisplay: PublicFsPathElement[];
 
     genericError: boolean;
@@ -136,6 +138,9 @@ export const load = async ({ params }): Promise<FSOutput> => {
                 }
             }*/
 
+            if (fsWalkCurrent.corrupt !== undefined)
+                break;
+
             if (getIsFsEntryDirectory(fsWalkCurrent)) {
                 if (getIsFsDirectoryContentsEncrypted(fsWalkCurrent.contents)) {
                     // The slug is a passphrase for a directory.
@@ -147,7 +152,7 @@ export const load = async ({ params }): Promise<FSOutput> => {
 
                     if (decryptedData !== null)
                         // Successfully decrypted - update the current walk path with our current directory.
-                        fsWalkCurrent = { directory: true, contents: JSON.parse(dec.decode(decryptedData)) };
+                        fsWalkCurrent = fixDecryptedFsDirectory({ directory: true, contents: JSON.parse(dec.decode(decryptedData)) });
                     else
                         if (i == slugs.length - 1) {
                             // This slug was the last - so we can just show that the decryption failed.
@@ -155,6 +160,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
 
                             return {
                                 filePathToDisplay: filePathToDisplay,
+
+                                corruptionMessage: fsWalkCurrent.corrupt,
 
                                 genericError: false,
 
@@ -166,6 +173,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
                             // Show a generic error page.
                             return {
                                 filePathToDisplay: filePathToDisplay,
+
+                                corruptionMessage: fsWalkCurrent.corrupt,
 
                                 genericError: true,
 
@@ -182,6 +191,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
                         // Show a generic error page.
                         return {
                             filePathToDisplay: filePathToDisplay,
+
+                            corruptionMessage: fsWalkCurrent.corrupt,
 
                             genericError: true,
 
@@ -207,6 +218,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
                             return {
                                 filePathToDisplay: filePathToDisplay,
 
+                                corruptionMessage: fsWalkCurrent.corrupt,
+
                                 genericError: false,
 
                                 showPassword: true,
@@ -219,6 +232,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
                             return {
                                 filePathToDisplay: filePathToDisplay,
 
+                                corruptionMessage: fsWalkCurrent.corrupt,
+
                                 genericError: true,
 
                                 showPassword: false,
@@ -228,6 +243,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
                     // Show a generic error page.
                     return {
                         filePathToDisplay: filePathToDisplay,
+
+                        corruptionMessage: fsWalkCurrent.corrupt,
 
                         genericError: true,
 
@@ -245,6 +262,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
             return {
                 filePathToDisplay: filePathToDisplay,
 
+                corruptionMessage: fsWalkCurrent.corrupt,
+
                 genericError: false,
 
                 showPassword: true,
@@ -255,6 +274,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
             return {
                 fsEntry: fsWalkCurrent,
                 filePathToDisplay: filePathToDisplay,
+
+                corruptionMessage: fsWalkCurrent.corrupt,
 
                 genericError: false,
 
@@ -268,6 +289,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
 
             return {
                 filePathToDisplay: filePathToDisplay,
+
+                corruptionMessage: fsWalkCurrent.corrupt,
 
                 genericError: false,
 
@@ -294,6 +317,8 @@ export const load = async ({ params }): Promise<FSOutput> => {
             return {
                 fsEntry: fsWalkCurrent,
                 filePathToDisplay: filePathToDisplay,
+
+                corruptionMessage: fsWalkCurrent.corrupt,
 
                 dataUri: dataUri,
 

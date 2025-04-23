@@ -1,8 +1,8 @@
 export interface Encrypted {
-    cipherText: ArrayBuffer;
+    cipherText: Uint8Array;
     salt: Uint8Array;
     iv: Uint8Array;
-    sha256: ArrayBuffer
+    sha256: Uint8Array
 }
 
 export enum FileType {
@@ -23,6 +23,8 @@ export interface FSFile {
 
     fileContent: FSFileInfo | Encrypted;
 
+    corrupted?: string;
+
     //filePassword: string
 }
 
@@ -34,7 +36,52 @@ export interface FSDirectory {
     contents: { [index: string]: FSEntry } | Encrypted;
 }
 
-export type FSEntry = FSDirectory | FSFile;
+export const pbkdf2Iterations: number = 2000000;
+
+export type FSEntry = (FSDirectory | FSFile) & { corrupt?: string };
+
+export function convertJsonParsedUint8ArrayToUint8Array(jsonParsedUint8Array: { [index: string]: number }): Uint8Array {
+    let uint8Array = new Uint8Array(Object.keys(jsonParsedUint8Array).length);
+
+    for (const jsonParsedUint8ArrayKey of Object.keys(jsonParsedUint8Array)) {
+        uint8Array[Number.parseInt(jsonParsedUint8ArrayKey)] = jsonParsedUint8Array[jsonParsedUint8ArrayKey];
+    }
+
+    return uint8Array;
+}
+
+export function fixEncrypted(toFix: any): Encrypted {
+    return {
+        cipherText: convertJsonParsedUint8ArrayToUint8Array(toFix.cipherText),
+        salt: convertJsonParsedUint8ArrayToUint8Array(toFix.salt),
+        iv: convertJsonParsedUint8ArrayToUint8Array(toFix.iv),
+        sha256: convertJsonParsedUint8ArrayToUint8Array(toFix.sha256)
+    }
+}
+
+export function fixDecryptedFsDirectory(toFix: FSDirectory) {
+    // Converts JSON representations of Uint8Arrays to Uint8Arrays.
+    // JSON.Parse() doesn't do this automatically.
+
+    if (getIsFsDirectoryContentsEncrypted(toFix.contents))
+        throw new Error("\"toFix\" must not be encrypted.");
+
+    for (const decryptedFsEntryName of Object.keys(toFix.contents)) {
+        let encrypted: Encrypted | null = null;
+
+        if (getIsFsEntryFile(toFix.contents[decryptedFsEntryName])) {
+            if (getIsFsFileContentsEncrypted(toFix.contents[decryptedFsEntryName].fileContent)) {
+                toFix.contents[decryptedFsEntryName].fileContent = fixEncrypted(toFix.contents[decryptedFsEntryName].fileContent);
+            }
+        } else {
+            if (getIsFsDirectoryContentsEncrypted(toFix.contents[decryptedFsEntryName].contents)) {
+                toFix.contents[decryptedFsEntryName].contents = fixEncrypted(toFix.contents[decryptedFsEntryName].contents);
+            }
+        }
+    }
+
+    return toFix;
+}
 
 //export enum FSEntryType {
 //    FILE,

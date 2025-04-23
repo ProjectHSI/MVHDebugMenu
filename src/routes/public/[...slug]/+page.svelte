@@ -2,7 +2,7 @@
     import "core-js/actual/typed-array/from-base64";
     import "core-js/actual/typed-array/to-base64";
 
-    import {type FSDirectory, type FSEntry} from "$lib/publicFs"
+    import {type FSDirectory, type FSEntry, pbkdf2Iterations} from "$lib/publicFs"
     //import { FS } from "$lib/publicFsContents.compile"
     import {goto} from "$app/navigation";
     import { page } from '$app/state';
@@ -18,11 +18,13 @@
     }
 
     async function getKey(keyPhrase: Uint8Array, salt?: Uint8Array): Promise<CryptoKey> {
-
+		console.log(keyPhrase, salt);
 
         const generatedKey = await crypto.subtle.importKey("raw", keyPhrase, { name: "PBKDF2" }, false, [ "deriveKey" ]);
 
-        const derivedKey = await crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-512", salt: salt !== undefined ? salt : crypto.getRandomValues(new Uint8Array(16)), iterations: 5000 }, generatedKey, { name: "AES-GCM", length: 256 }, true, [ "encrypt", "decrypt" ]);
+        console.log(generatedKey);
+
+        const derivedKey = await crypto.subtle.deriveKey({ name: "PBKDF2", hash: "SHA-512", salt: salt !== undefined ? salt : crypto.getRandomValues(new Uint8Array(16)), iterations: pbkdf2Iterations }, generatedKey, { name: "AES-GCM", length: 256 }, true, [ "encrypt", "decrypt" ]);
         //@ts-ignore
         console.log(new Uint8Array(await crypto.subtle.exportKey("raw", derivedKey)).toBase64({ alphabet: "base64url" }), salt)
 
@@ -89,9 +91,13 @@
     let password: string = $state("");
 </script>
 
+{#snippet ServerError(title, description)}
+	<h1 style="text-align: left; color: black; margin-top: 0; margin-bottom: 0">{title}</h1>
+	<p style="color: black; margin-top: 0; margin-bottom: 0;">{description}</p>
+{/snippet}
+
 {#if data.genericError}
-	<h1>401 Bad Request</h1>
-	<p>The request that was sent to the server was invalid.</p>
+	{@render ServerError("401 Bad Request", "The request that was sent to the server was invalid.")}
 {:else}
 	<div id="publicFsDisplayBox">
 		<div id="pathDisplayDiv">
@@ -99,7 +105,9 @@
 		</div>
 
 		<div id="publicFsContentBox">
-			{#if data.showPassword}
+			{#if data.corruptionMessage !== undefined}
+				{@render ServerError("500 Internal Server Error", data.corruptionMessage)}
+			{:else if data.showPassword}
 				<div id="publicFsPasswordDisplayBox">
 					<div id="publicFsPasswordBox">
 						<span class="decryptFile">Encrypted File</span>
@@ -122,11 +130,9 @@
 					{/each}
 				{/if}
 			{:else}
-				<h1>401 Bad Request</h1>
-				<p>The request that was sent to the server was invalid.</p>
+				{@render ServerError("401 Bad Request", "The request that was sent to the server was invalid.")}
 			{/if}
 		</div>
-		<!--<span style="font-size: 2em">/</span>-->
 	</div>
 {/if}
 
@@ -203,6 +209,6 @@
     border: none;
     padding: 0;
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
   }
 </style>
